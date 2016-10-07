@@ -14,8 +14,11 @@ public class Main {
         // initialize clauses and atoms
         getInput(args[0]);
 
-        System.out.println(clauses.toString());
-        System.out.println(atoms.toString());
+//        System.out.println(clauses.toString());
+//        System.out.println(atoms.toString());
+
+        System.out.println();
+        System.out.println(DavisPutnam(clauses, atoms).toString() + "\n\n");
 
     }
 
@@ -38,10 +41,10 @@ public class Main {
     public static HashMap<String, Boolean> DPL(HashSet<String> atoms, ArrayList<String> clauses, HashMap<String, Boolean> assignments){
 
         // (1) Determine Success or Failure //
-
         while(true){
             //base case: success -- all clauses are satisfied
             if(clauses.isEmpty()){
+                System.out.println("SUCCESS: all clauses are satisfied\n");
                 for(String atom : atoms){
                     if(assignments.get(atom) == null){
                         assignments.put(atom, true);
@@ -49,8 +52,9 @@ public class Main {
                     }
                 }
             }
-            //base case: failure -- some clause in S is empty
+            //base case: failure -- some clause in the set is empty
             else if(hasEmptyClause(clauses)){
+                System.out.println("FAIL: some clause in the set is empty\n");
                 return null;
             }
 
@@ -78,24 +82,25 @@ public class Main {
 
         // pick atom L such that V[L] == UNBOUND;  /* Try one assignment */
         String L = getNextUnassignedAtom(assignments);
-
         assignments.put(L, true);
+        System.out.println("\n--> try " + L + " = true");
+
         propagate(L, clauses, assignments);
-
         HashMap<String, Boolean> newassignments = DPL(atoms, clauses, assignments);
-
         if(newassignments != null){
             return newassignments;
         }
 
         ///* IF V[A] := TRUE didn't work, try V[A} := FALSE;
         assignments.put(L, false);
+        System.out.println("--> try " + L + " = false");
         propagate(L, clauses, assignments);
         return DPL(atoms, clauses, assignments);
 
     }
 
 
+    // OBVIOUSASSIGN
     public static void obviousAssign(String L, HashSet<String> atoms, HashMap<String, Boolean> assignments){
         if(atoms.contains(L)){
             assignments.put(L, true);
@@ -106,20 +111,27 @@ public class Main {
     }
 
 
+    //PROPAGATE
     public static HashMap<String, Boolean> propagate(String L, ArrayList<String> clauses, HashMap<String, Boolean> assignments){
+
+        System.out.println("(propagate()): " + assignments.toString());
         for(int i=0; i<clauses.size(); i++) {
-            if (clauses.get(i).contains(L) && assignments.get(L)==true || clauses.get(i).contains("-"+L) && assignments.get(L) == false){
+            if ((clauses.get(i).contains(" "+L) && assignments.get(L)==true) || (clauses.get(i).contains("-"+L) && assignments.get(L) == false)){
+                System.out.println("====> removing " + clauses.get(i));
                 clauses.remove(i);
             }
-            else if (clauses.get(i).contains(L) && assignments.get(L) == false){
+            else if (clauses.get(i).contains(" "+L) && assignments.get(L) == false){
+                System.out.println("====> removing " + L + " from " + clauses.get(i));
                 clauses.set(i, removeFromClause(L, clauses.get(i)));
             }
             else if (clauses.get(i).contains("-"+L) && assignments.get(L) == true){
+                System.out.println("====> removing " + "-"+L + " from " + clauses.get(i));
                 clauses.set(i, removeFromClause("-"+L, clauses.get(i)));
             }
         }
         return assignments;
     }
+
 
     public static String removeFromClause(String remove_item, String clause){
         return clause.replace(remove_item,"");
