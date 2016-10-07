@@ -2,10 +2,7 @@ package com.yf833;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
@@ -19,7 +16,6 @@ public class Main {
 
         System.out.println(clauses.toString());
         System.out.println(atoms.toString());
-
 
     }
 
@@ -43,38 +39,55 @@ public class Main {
 
         // (1) Determine Success or Failure //
 
-        //base case: success -- all clauses are satisfied
-        if(clauses.isEmpty()){
-            for(String atom : atoms){
-                if(assignments.get(atom) == null){
-                    assignments.put(atom, true);
-                    return assignments;
+        while(true){
+            //base case: success -- all clauses are satisfied
+            if(clauses.isEmpty()){
+                for(String atom : atoms){
+                    if(assignments.get(atom) == null){
+                        assignments.put(atom, true);
+                        return assignments;
+                    }
                 }
             }
+            //base case: failure -- some clause in S is empty
+            else if(hasEmptyClause(clauses)){
+                return null;
+            }
+
+            // (2) Literal Elimination or Forced Assignment //
+
+            // if there is a single literal in the set of clauses (with no negation)
+            // remove all instances of that
+            else if(getSingleLiteral(clauses) != -1){
+                String L = clauses.get(getSingleLiteral(clauses));
+                obviousAssign(L, atoms, assignments);
+                deleteInstancesContainingL(L, clauses);
+            }
+            // if there is a clause in the set that contains a single literal
+            else if (getSingleLiteral(clauses) != -1){
+                String L = clauses.get(getSingleLiteral(clauses));
+                obviousAssign(L, atoms, assignments);
+                propagate(L, clauses, assignments);
+            }
+            else{
+                break;
+            }
         }
-        //base case: failure -- some clause in S is empty
-        else if(hasEmptyClause(clauses)){
-            return null;
-        }
 
-        // (2) Literal Elimination or Forced Assignment //
+        ///* PICK SOME ATOM AND TRY EACH ASSIGNMENT IN TURN */
+//        pick atom A such that V[A] == UNBOUND;  /* Try one assignment */
 
-        // if there is a single literal in the set of clauses (with no negation)
-        // remove all instances of that
-        else if(getSingleLiteral(clauses) != -1){
 
-        }
-//        then { V := obvious_assign(L,V);
-//            delete every clause containing L from S;
-//        }
-//        else if (there exists a clause C in S       /* Forced assignment */
-//        containing a single literal L)
-//        then { V := obvious_assign(L,V)
-//            S := propagate(atom(L), S, V);
-//        }
-//        else exitloop;  /* No easy cases found */
-//    }   /* endloop */
-
+//        V[A] := TRUE;
+//        S1 := propagate(A, S, V);
+//        VNEW := dp1(ATOMS,S1,V);
+//        if (VNEW != NIL) then return(VNEW);
+//
+///* IF V[A] := TRUE didn't work, try V[A} := FALSE;
+//V[A] := FALSE;
+//S1 := propagate(A, S, V);
+//return(dp1(ATOMS,S1,V));
+//} end dp1
 
     }
 
@@ -134,7 +147,9 @@ public class Main {
 //S1 := propagate(A, S, V);
 //return(dp1(ATOMS,S1,V));
 //} end dp1
-//
+
+
+
 //propagate(A,S,V)
 //{ for each clause C in S do
 //     if ((A in C and V[A]=TRUE) or (~A in C and V[A]==FALSE))
@@ -144,7 +159,9 @@ public class Main {
 //  return S;
 //}
 //end propagate.
-//
+
+
+
 //obvious_assign(L,V) {
 //  if (L is an atom A) then V[A] := TRUE;
 //  else if (L has the form ~A) then V[A] := FALSE;
@@ -210,6 +227,13 @@ public class Main {
         return false;
     }
 
+    public static void deleteInstancesContainingL(String L, ArrayList<String> clauses){
+        for(int i=0; i<clauses.size(); i++){
+            if(clauses.get(i).contains(" " + L)){
+                clauses.remove(i);
+            }
+        }
+    }
 
 
     //parse through input file and assign clauses and atoms
@@ -236,6 +260,20 @@ public class Main {
             }
         }
 
+    }
+
+    //find the next null item in the HashMap and return it
+    public static String getNextUnassignedAtom(HashMap<String, Boolean> assignments){
+
+        for (Map.Entry<String, Boolean> entry : assignments.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if(value == null){
+                return key;
+            }
+        }
+        return null;
     }
 
 
