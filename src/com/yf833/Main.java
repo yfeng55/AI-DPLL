@@ -40,7 +40,7 @@ public class Main {
         //initialize atoms (drop negative sign when comparing)
         for(String clause : clauses){
             for(String atom : clause.split(" +")){
-                if(!atoms.contains(atom)){
+                if(!atoms.contains(atom) && !atoms.contains(atom.substring((1)))){
                     atoms.add(atom);
                 }
             }
