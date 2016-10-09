@@ -8,6 +8,7 @@ public class Main {
 
     public static ArrayList<String> initclauses = new ArrayList<>();
     public static HashSet<String> initatoms = new HashSet<>();
+    public static HashMap<String, Boolean> solution;
 
     public static void main(String[] args) throws FileNotFoundException {
 
@@ -23,7 +24,9 @@ public class Main {
         System.out.println("--------------------\n");
 
         System.out.println();
-        System.out.println(DavisPutnam(new ArrayList<>(initclauses), new HashSet<>(initatoms)).toString() + "\n\n");
+
+        solution = DavisPutnam(new ArrayList<>(initclauses), new HashSet<>(initatoms));
+        System.out.println(solution.toString() + "\n\n");
     }
 
     // given a set of clauses and atoms;
@@ -49,12 +52,14 @@ public class Main {
             if(clauses.isEmpty()){
                 System.out.println("SUCCESS: all clauses are satisfied\n");
                 for(String atom : atoms){
-                    if(assignments.get(atom) == null){
-                        assignments.put(atom, true);
-                        return assignments;
-                    }
+                    if(assignments.get(atom) == null){ assignments.put(atom, true); }
                 }
+
+                solution = assignments;
+                return assignments;
             }
+
+
             //base case: failure -- some clause in the set is empty
             else if(hasEmptyClause(clauses)){
                 System.out.println("FAIL: some clause in the set is empty\n");
@@ -71,11 +76,11 @@ public class Main {
                 deleteInstancesContainingL(L, clauses);
             }
             // if there is a clause in the set that contains a single literal
-            else if (getSingleLiteral(clauses) != -1){
-                String L = clauses.get(getSingleLiteral(clauses));
-                obviousAssign(L, atoms, assignments);
-                clauses = propagate(L, new ArrayList<>(clauses), new HashMap<>(assignments));
-            }
+//            else if (getSingleLiteral(clauses) != -1){
+//                String L = clauses.get(getSingleLiteral(clauses));
+//                obviousAssign(L, atoms, assignments);
+//                clauses = propagate(L, new ArrayList<>(clauses), new HashMap<>(assignments));
+//            }
             else{
                 break;
             }
@@ -104,6 +109,7 @@ public class Main {
 
     // OBVIOUSASSIGN
     public static void obviousAssign(String L, HashSet<String> atoms, HashMap<String, Boolean> assignments){
+        L = L.replaceAll("\\s+","");
         if(atoms.contains(L)){ assignments.put(L, true); }
         else{ assignments.put(L, false); }
     }
@@ -115,8 +121,7 @@ public class Main {
         ArrayList<String> newclauses = new ArrayList<>(oldclauses);
         HashSet<Integer> items_to_remove = new HashSet<>();
 
-        System.out.println("(propagate()): " + assignments.toString());
-        System.out.println(newclauses.toString());
+        System.out.println("propagate(): " + assignments.toString() + " for " + newclauses.toString());
 
         for(int i=0; i<newclauses.size(); i++) {
             if ((newclauses.get(i).contains(" "+L) && assignments.get(L)==true) || (newclauses.get(i).contains("-"+L) && assignments.get(L) == false)){
@@ -176,8 +181,9 @@ public class Main {
     }
 
     public static void deleteInstancesContainingL(String L, ArrayList<String> clauses){
+        L = L.replaceAll("\\s+","");
         for(int i=0; i<clauses.size(); i++){
-            if(clauses.get(i).contains(" " + L)){
+            if(clauses.get(i).contains(" " + L) || clauses.get(i).replaceAll("\\s+","").equals(L)){
                 clauses.remove(i);
             }
         }
@@ -193,9 +199,7 @@ public class Main {
         //initilialize clauses
         while(s.hasNextLine()){
             String nextclause = s.nextLine();
-            if(nextclause.replaceAll("\\s+","").equals("0")){
-                break;
-            }
+            if(nextclause.replaceAll("\\s+","").equals("0")){ break; }
             initclauses.add(nextclause);
         }
 
@@ -205,6 +209,13 @@ public class Main {
                 if(!initatoms.contains(atom) && !initatoms.contains(atom.substring((1)))){
                     initatoms.add(atom);
                 }
+            }
+        }
+
+        //add spaces to beginning of clauses (so that negation symbols are detectable consistently
+        for(int i=0; i<initclauses.size(); i++){
+            if(initclauses.get(i).charAt(0) != '-'){
+                initclauses.set(i, " "+initclauses.get(i));
             }
         }
 
