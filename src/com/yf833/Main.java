@@ -59,21 +59,10 @@ public class Main {
                 return assignments;
             }
 
-
             //base case: failure -- some clause in the set is empty
             else if(hasEmptyClause(clauses)){
                 System.out.println("FAIL: some clause in the set is empty\n");
                 return null;
-            }
-
-            // (2) Literal Elimination or Forced Assignment //
-
-            // if there is a single literal in the set of clauses (with no negation)
-            // remove all instances of that
-            else if(getSingleLiteral(clauses) != -1){
-                String L = clauses.get(getSingleLiteral(clauses));
-                obviousAssign(L, atoms, new HashMap<>(assignments));
-                deleteInstancesContainingL(L, clauses);
             }
             else{
                 break;
@@ -102,15 +91,6 @@ public class Main {
         return DPL(atoms, new ArrayList<>(clauses_F), assignments_F);
 
     }
-
-
-    // OBVIOUSASSIGN
-    public static void obviousAssign(String L, HashSet<String> atoms, HashMap<String, Boolean> assignments){
-        L = L.replaceAll("\\s+","");
-        if(atoms.contains(L)){ assignments.put(L, true); }
-        else{ assignments.put(L, false); }
-    }
-
 
     //PROPAGATE: return a new set of clauses
     public static ArrayList<String> propagate(String L, ArrayList<String> oldclauses, HashMap<String, Boolean> assignments){
@@ -182,6 +162,7 @@ public class Main {
         for(int i=0; i<clauses.size(); i++){
             if(clauses.get(i).contains(" " + L) || clauses.get(i).replaceAll("\\s+","").equals(L)){
                 clauses.remove(i);
+                System.out.println("====> removing clause " + clauses.get(i));
             }
         }
     }
