@@ -203,7 +203,10 @@ public class Main {
         //initialize atoms (drop negative sign when comparing)
         for(String clause : initclauses){
             for(String atom : clause.split(" +")){
-                if(!initatoms.contains(atom) && !initatoms.contains(atom.substring((1)))){
+                if(atom.charAt(0) == '-' && !initatoms.contains(atom.substring(1)) ){
+                    initatoms.add(atom.substring(1));
+                }
+                else if(!initatoms.contains(atom) && !initatoms.contains(atom.substring(1)) ){
                     initatoms.add(atom);
                 }
             }
