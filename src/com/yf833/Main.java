@@ -75,12 +75,6 @@ public class Main {
                 obviousAssign(L, atoms, new HashMap<>(assignments));
                 deleteInstancesContainingL(L, clauses);
             }
-            // if there is a clause in the set that contains a single literal
-//            else if (getSingleLiteral(clauses) != -1){
-//                String L = clauses.get(getSingleLiteral(clauses));
-//                obviousAssign(L, atoms, assignments);
-//                clauses = propagate(L, new ArrayList<>(clauses), new HashMap<>(assignments));
-//            }
             else{
                 break;
             }
