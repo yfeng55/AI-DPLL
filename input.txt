@@ -8,9 +8,9 @@
 2 -5
 -3 -5
 0
-
-P Q R
--P R
--R
-0 
-This is a simple example with 3 clauses and 3 atoms.
+1 P
+2 Q
+3 R
+4 W
+5 U
+6 X

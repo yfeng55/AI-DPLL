@@ -1,16 +1,20 @@
-package com.yf833;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
-public class Main {
+public class DavisPutnam{
 
     public static ArrayList<String> initclauses = new ArrayList<>();
     public static HashSet<String> initatoms = new HashSet<>();
     public static HashMap<String, Boolean> solution;
+    public static ArrayList<String> ignoredlines = new ArrayList<>();
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         // initialize clauses and atoms
         getInput(args[0]);
@@ -27,6 +31,8 @@ public class Main {
 
         solution = DavisPutnam(new ArrayList<>(initclauses), new HashSet<>(initatoms));
         System.out.println(solution.toString() + "\n\n");
+
+        printOutput(solution, args[1]);
     }
 
     // given a set of clauses and atoms;
@@ -177,8 +183,16 @@ public class Main {
         //initilialize clauses
         while(s.hasNextLine()){
             String nextclause = s.nextLine();
-            if(nextclause.replaceAll("\\s+","").equals("0")){ break; }
+            if(nextclause.replaceAll("\\s+","").equals("0")){
+                ignoredlines.add(nextclause);
+                break;
+            }
             initclauses.add(nextclause);
+        }
+        //store ignored lines in a list
+        while(s.hasNextLine()){
+            String nextclause = s.nextLine();
+            ignoredlines.add(nextclause);
         }
 
         //initialize atoms (drop negative sign when comparing)
@@ -196,7 +210,7 @@ public class Main {
         //add spaces to beginning of clauses (so that negation symbols are detectable consistently
         for(int i=0; i<initclauses.size(); i++){
             if(initclauses.get(i).charAt(0) != '-'){
-                initclauses.set(i, " "+initclauses.get(i));
+                initclauses.set(i, " " + initclauses.get(i));
             }
         }
 
@@ -215,6 +229,52 @@ public class Main {
         }
         return null;
     }
+
+
+    //print assignments to a file
+    public static void printOutput(HashMap<String, Boolean> solution, String output) throws IOException {
+
+        ArrayList<String> sortedkeys = new ArrayList<>();
+
+        //get keys in sorted order
+        for(String k : solution.keySet()){
+            sortedkeys.add(k);
+        }
+        Collections.sort(sortedkeys, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                if (Integer.parseInt(o1) > Integer.parseInt(o2)) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        });
+
+
+        ArrayList<String> outputcontent = new ArrayList<>();
+
+        //print atom assignments in sorted order
+        for(String key : sortedkeys){
+            if(solution.get(key) == true){
+                outputcontent.add(key + " T");
+            }else{
+                outputcontent.add(key + " F");
+            }
+        }
+
+        //print ignored lines at the bottom
+        for(String line : ignoredlines){
+            outputcontent.add(line);
+        }
+
+        //print output to a file
+        Path file = Paths.get(output);
+        Files.write(file, outputcontent, Charset.forName("UTF-8"));
+
+
+    }
+
 
 
 }
