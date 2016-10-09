@@ -1,5 +1,12 @@
 1 2 3
 -2 3
 -3
+0
+
+
+
+P Q R
+-P R
+-R
 0 
 This is a simple example with 3 clauses and 3 atoms.

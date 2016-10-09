@@ -72,7 +72,7 @@ public class Main {
             // remove all instances of that
             else if(getSingleLiteral(clauses) != -1){
                 String L = clauses.get(getSingleLiteral(clauses));
-                obviousAssign(L, atoms, assignments);
+                obviousAssign(L, atoms, new HashMap<>(assignments));
                 deleteInstancesContainingL(L, clauses);
             }
             // if there is a clause in the set that contains a single literal
@@ -86,23 +86,26 @@ public class Main {
             }
         }
 
-        // PICK SOME ATOM AND TRY EACH ASSIGNMENT IN TURN //
-        // pick an unbound atom L
+        // Pick an unassigned atom and try T/F assignments, then propagating //
         String L = getNextUnassignedAtom(assignments);
-        assignments.put(L, true);
         System.out.println("\n--> try " + L + " = true");
 
-        ArrayList<String> clauses_T = propagate(L, new ArrayList<>(clauses), new HashMap<>(assignments));
-        HashMap<String, Boolean> newassignments = DPL(atoms, new ArrayList<>(clauses_T), new HashMap<>(assignments));
+        // try setting L to true and propagating //
+        HashMap<String, Boolean> assignments_T = new HashMap<>(assignments);
+        assignments_T.put(L, true);
+        ArrayList<String> clauses_T = propagate(L, new ArrayList<>(clauses), assignments_T);
+        HashMap<String, Boolean> newassignments = DPL(atoms, new ArrayList<>(clauses_T), assignments_T);
+
         if(newassignments != null){
             return newassignments;
         }
 
-        // IF L = TRUE didn't work, try L = FALSE //
-        assignments.put(L, false);
+        // If L = TRUE didn't work, try L = FALSE //
+        HashMap<String, Boolean> assignments_F = new HashMap<>(assignments);
+        assignments_F.put(L, false);
         System.out.println("--> try " + L + " = false");
-        ArrayList<String> clauses_F = propagate(L, new ArrayList<>(clauses), new HashMap<>(assignments));
-        return DPL(atoms, new ArrayList<>(clauses_F), new HashMap<>(assignments));
+        ArrayList<String> clauses_F = propagate(L, new ArrayList<>(clauses), assignments_F);
+        return DPL(atoms, new ArrayList<>(clauses_F), assignments_F);
 
     }
 
