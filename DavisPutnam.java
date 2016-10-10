@@ -235,33 +235,34 @@ public class DavisPutnam{
     public static void printOutput(HashMap<String, Boolean> solution, String output) throws IOException {
 
         ArrayList<String> sortedkeys = new ArrayList<>();
-
-        //get keys in sorted order
-        for(String k : solution.keySet()){
-            sortedkeys.add(k);
-        }
-        Collections.sort(sortedkeys, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                if (Integer.parseInt(o1) > Integer.parseInt(o2)) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-            }
-        });
-
-
         ArrayList<String> outputcontent = new ArrayList<>();
 
-        //print atom assignments in sorted order
-        for(String key : sortedkeys){
-            if(solution.get(key) == true){
-                outputcontent.add(key + " T");
-            }else{
-                outputcontent.add(key + " F");
+        if(!solution.isEmpty()){
+            //get keys in sorted order
+            for(String k : solution.keySet()){
+                sortedkeys.add(k);
+            }
+            Collections.sort(sortedkeys, new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    if (Integer.parseInt(o1) > Integer.parseInt(o2)) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            });
+
+            //print atom assignments in sorted order
+            for(String key : sortedkeys){
+                if(solution.get(key) == true){
+                    outputcontent.add(key + " T");
+                }else{
+                    outputcontent.add(key + " F");
+                }
             }
         }
+
 
         //print ignored lines at the bottom
         for(String line : ignoredlines){
@@ -271,7 +272,6 @@ public class DavisPutnam{
         //print output to a file
         Path file = Paths.get(output);
         Files.write(file, outputcontent, Charset.forName("UTF-8"));
-
 
     }
 
