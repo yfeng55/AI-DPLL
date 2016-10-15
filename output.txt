@@ -1,31 +1,61 @@
+1 T
+2 F
+3 F
+4 F
+5 F
+6 F
+7 F
+8 F
+9 F
+10 F
+11 F
+12 T
+13 F
+14 F
+15 F
+16 F
+17 F
+18 T
+19 T
+20 T
+21 F
+22 F
+23 F
+24 F
+25 F
+26 T
+27 F
+28 F
+29 F
+30 F
 0
-1 At(Start, 0)
-2 At(Start, 1)
-3 At(Start, 2)
-4 At(Start, 3)
-5 At(Start, 4)
-6 At(A, 0)
-7 At(A, 1)
-8 At(A, 2)
-9 At(A, 3)
-10 At(A, 4)
-11 At(B, 0)
-12 At(B, 1)
-13 At(B, 2)
-14 At(B, 3)
-15 At(B, 4)
-16 At(Goal, 0)
-17 At(Goal, 1)
-18 At(Goal, 2)
-19 At(Goal, 3)
-20 At(Goal, 4)
-21 Avail(Wand, 0)
-22 Has(Wand, 0)
-23 Avail(Wand, 1)
-24 Has(Wand, 1)
-25 Avail(Wand, 2)
-26 Has(Wand, 2)
-27 Avail(Wand, 3)
-28 Has(Wand, 3)
-29 Avail(Wand, 4)
-30 Has(Wand, 4)
+1 At(Start,0)
+2 At(Start,1)
+3 At(Start,2)
+4 At(Start,3)
+5 At(Start,4)
+6 At(A,0)
+7 At(A,1)
+8 At(A,2)
+9 At(A,3)
+10 At(A,4)
+11 At(B,0)
+12 At(B,1)
+13 At(B,2)
+14 At(B,3)
+15 At(B,4)
+16 At(Goal,0)
+17 At(Goal,1)
+18 At(Goal,2)
+19 At(Goal,3)
+20 At(Goal,4)
+21 Available(Wand,0)
+22 Available(Wand,1)
+23 Available(Wand,2)
+24 Available(Wand,3)
+25 Available(Wand,4)
+26 Has(Wand,0)
+27 Has(Wand,1)
+28 Has(Wand,2)
+29 Has(Wand,3)
+30 Has(Wand,4)
