@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,7 +31,13 @@ public class DavisPutnam{
         System.out.println();
 
         solution = DavisPutnam(new ArrayList<>(initclauses), new HashSet<>(initatoms));
-        System.out.println(solution.toString() + "\n\n");
+
+        if(solution != null){
+            System.out.println(solution.toString() + "\n\n");
+        }else{
+            System.out.println("0");
+        }
+
 
         printOutput(solution, args[1]);
     }
@@ -52,8 +59,11 @@ public class DavisPutnam{
     // DPL METHOD (RECURSIVE)
     public static HashMap<String, Boolean> DPL(HashSet<String> atoms, ArrayList<String> clauses, HashMap<String, Boolean> assignments){
 
+        System.out.println();
+
         // (1) Determine Success or Failure //
         while(true){
+
             //base case: success -- all clauses are satisfied
             if(clauses.isEmpty()){
                 System.out.println("SUCCESS: all clauses are satisfied\n");
@@ -66,10 +76,11 @@ public class DavisPutnam{
             }
 
             //base case: failure -- some clause in the set is empty
-            else if(hasEmptyClause(clauses)){
-                System.out.println("FAIL: some clause in the set is empty\n");
+            if(hasEmptyClause(clauses)){
+//                 System.out.println("FAIL: some clause in the set is empty\n");
                 return null;
             }
+
             else{
                 break;
             }
@@ -77,7 +88,9 @@ public class DavisPutnam{
 
         // Pick an unassigned atom and try T/F assignments, then propagating //
         String L = getNextUnassignedAtom(assignments);
-        System.out.println("\n--> try " + L + " = true");
+        if(L ==  null){ return null; }
+
+         System.out.println("\n--> try " + L + " = true");
 
         // try setting L to true and propagating //
         HashMap<String, Boolean> assignments_T = new HashMap<>(assignments);
@@ -92,7 +105,7 @@ public class DavisPutnam{
         // If L = TRUE didn't work, try L = FALSE //
         HashMap<String, Boolean> assignments_F = new HashMap<>(assignments);
         assignments_F.put(L, false);
-        System.out.println("--> try " + L + " = false");
+         System.out.println("--> try " + L + " = false");
         ArrayList<String> clauses_F = propagate(L, new ArrayList<>(clauses), assignments_F);
         return DPL(atoms, new ArrayList<>(clauses_F), assignments_F);
 
@@ -104,19 +117,19 @@ public class DavisPutnam{
         ArrayList<String> newclauses = new ArrayList<>(oldclauses);
         HashSet<Integer> items_to_remove = new HashSet<>();
 
-        System.out.println("propagate(): " + assignments.toString() + " for " + newclauses.toString());
+         System.out.println("propagate(): " + assignments.toString() + " for " + newclauses.toString());
 
         for(int i=0; i<newclauses.size(); i++) {
-            if ((newclauses.get(i).contains(" "+L) && assignments.get(L)==true) || (newclauses.get(i).contains("-"+L) && assignments.get(L) == false)){
-                System.out.println("====> removing clause " + newclauses.get(i));
+            if ((newclauses.get(i).contains(" "+L+" ") && assignments.get(L)==true) || (newclauses.get(i).contains("-"+L+" ") && assignments.get(L) == false)){
+                 System.out.println("====> removing clause " + newclauses.get(i));
                 items_to_remove.add(i);
             }
-            else if (newclauses.get(i).contains(" "+L) && assignments.get(L) == false){
-                System.out.println("====> removing " + L + " from " + newclauses.get(i));
+            else if (newclauses.get(i).contains(" "+L+" ") && assignments.get(L) == false){
+                 System.out.println("====> removing " + L + " from " + newclauses.get(i));
                 newclauses.set(i, removeFromClause(L, newclauses.get(i)));
             }
-            else if (newclauses.get(i).contains("-"+L) && assignments.get(L) == true){
-                System.out.println("====> removing " + "-"+L + " from " + newclauses.get(i));
+            else if (newclauses.get(i).contains("-"+L+" ") && assignments.get(L) == true){
+                 System.out.println("====> removing " + "-"+L + " from " + newclauses.get(i));
                 newclauses.set(i, removeFromClause("-"+L, newclauses.get(i)));
             }
         }
@@ -131,8 +144,15 @@ public class DavisPutnam{
     }
 
 
+    // OBVIOUSASSIGN
+    public static void obviousAssign(String L, HashSet<String> atoms, HashMap<String, Boolean> assignments){
+        if(atoms.contains(L)){ assignments.put(L, true); }
+        else{ assignments.put(L, false); }
+    }
+
+
     public static String removeFromClause(String remove_item, String clause){
-        return clause.replace(remove_item,"");
+        return " " + clause.replace(remove_item,"").trim().replaceAll(" +", " ") + " ";
     }
 
 
@@ -168,7 +188,7 @@ public class DavisPutnam{
         for(int i=0; i<clauses.size(); i++){
             if(clauses.get(i).contains(" " + L) || clauses.get(i).replaceAll("\\s+","").equals(L)){
                 clauses.remove(i);
-                System.out.println("====> removing clause " + clauses.get(i));
+//                 System.out.println("====> removing clause " + clauses.get(i));
             }
         }
     }
@@ -187,7 +207,7 @@ public class DavisPutnam{
                 ignoredlines.add(nextclause);
                 break;
             }
-            initclauses.add(nextclause);
+            initclauses.add(nextclause.trim() + " ");
         }
         //store ignored lines in a list
         while(s.hasNextLine()){
@@ -207,7 +227,10 @@ public class DavisPutnam{
             }
         }
 
-        //add spaces to beginning of clauses (so that negation symbols are detectable consistently
+        System.out.println(initatoms.toString());
+        System.out.println();
+
+//        add spaces to beginning of clauses (so that negation symbols are detectable consistently
         for(int i=0; i<initclauses.size(); i++){
             if(initclauses.get(i).charAt(0) != '-'){
                 initclauses.set(i, " " + initclauses.get(i));
