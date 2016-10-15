@@ -260,7 +260,7 @@ public class DavisPutnam{
         ArrayList<String> sortedkeys = new ArrayList<>();
         ArrayList<String> outputcontent = new ArrayList<>();
 
-        if(!solution.isEmpty()){
+        if(solution != null){
             //get keys in sorted order
             for(String k : solution.keySet()){
                 sortedkeys.add(k);
